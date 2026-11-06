@@ -8,10 +8,28 @@
 </head>
 <body>
     <h1>Muistipeli</h1>
-    <div id="game-info">
-        <p>Yritykset: <span id="attempts">0</span></p>
+    
+    <div id="controls">
+        <label for="card-count">Korttien määrä:</label>
+        <select id="card-count">
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="12">12</option>
+            <option value="16" selected>16</option>
+            <option value="20">20</option>
+            <option value="24">24</option>
+        </select>
+        <button id="restart-btn">Aloita alusta</button>
     </div>
+
+    <div id="game-info">
+        <p>Yritykset: <span id="attempts">0</span> | Aika: <span id="timer">0</span> s</p>
+    </div>
+    
+    <div id="result" style="display: none; color: #d9534f; font-weight: bold; margin-bottom: 15px; font-size: 1.2rem;"></div>
+
     <div id="game-board"></div>
+
     <script type="module" src="./js/game.js"></script>
 </body>
 </html>
