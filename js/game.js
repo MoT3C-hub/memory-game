@@ -1,4 +1,4 @@
-import { createBoard } from './board.js';
+import { createBoard } from './board.js?v=3';
 
 document.addEventListener('DOMContentLoaded', () => {
     const cardCountSelect = document.getElementById('card-count');

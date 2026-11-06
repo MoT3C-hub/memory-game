@@ -1,15 +1,24 @@
-import { createCardElement, flipCard } from './card.js';
+import { createCardElement, flipCard } from './card.js?v=3';
 
 const allCards = [
     '🍎', '🍐', '🍒', '🍉', '🍇', '🍓', '🍌', '🍍', '🥝', '🥥', '🍑', '🍈', '🍋', '🍊', '🍏', '🍅'
 ];
 const gameBoard = document.getElementById('game-board');
 const attemptsElement = document.getElementById('attempts');
+const timerElement = document.getElementById('timer');
+const resultElement = document.getElementById('result');
 
 let firstCard = null;
 let secondCard = null;
 let lockBoard = false;
 let attempts = 0;
+let matchedPairs = 0;
+let totalPairs = 0;
+
+let timerInterval = null;
+let secondsElapsed = 0;
+let timerStarted = false;
+let unflipTimeout = null;
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -18,15 +27,52 @@ function shuffle(array) {
     }
 }
 
+function startTimer() {
+    if (timerStarted) return;
+    timerStarted = true;
+    timerInterval = setInterval(() => {
+        secondsElapsed++;
+        if (timerElement) {
+            timerElement.textContent = secondsElapsed;
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    timerStarted = false;
+}
+
 export function createBoard(cardCount) {
+    if (unflipTimeout) {
+        clearTimeout(unflipTimeout);
+        unflipTimeout = null;
+    }
+    stopTimer();
+
     gameBoard.innerHTML = '';
     attempts = 0;
+    matchedPairs = 0;
+    totalPairs = cardCount / 2;
+    secondsElapsed = 0;
+
     if (attemptsElement) {
         attemptsElement.textContent = attempts;
     }
+    if (timerElement) {
+        timerElement.textContent = secondsElapsed;
+    }
+    if (resultElement) {
+        resultElement.style.display = 'none';
+        resultElement.textContent = '';
+    }
+
     resetBoard();
 
-    const selectedCards = allCards.slice(0, cardCount / 2);
+    const selectedCards = allCards.slice(0, totalPairs);
     const cards = [...selectedCards, ...selectedCards];
     shuffle(cards);
 
@@ -42,6 +88,7 @@ function handleCardFlip(cardElement) {
     if (cardElement === firstCard) return;
     if (cardElement.classList.contains('flipped') || cardElement.classList.contains('matched')) return;
 
+    startTimer();
     flipCard(cardElement);
 
     if (!firstCard) {
@@ -61,7 +108,15 @@ function handleCardFlip(cardElement) {
 
 function checkForMatch() {
     const isMatch = firstCard.dataset.card === secondCard.dataset.card;
-    isMatch ? disableCards() : unflipCards();
+    if (isMatch) {
+        disableCards();
+        matchedPairs++;
+        if (matchedPairs === totalPairs) {
+            endGame();
+        }
+    } else {
+        unflipCards();
+    }
 }
 
 function disableCards() {
@@ -71,15 +126,29 @@ function disableCards() {
 }
 
 function unflipCards() {
-    setTimeout(() => {
-        firstCard.classList.remove('flipped');
-        secondCard.classList.remove('flipped');
-        firstCard.textContent = '';
-        secondCard.textContent = '';
+    unflipTimeout = setTimeout(() => {
+        if (firstCard) {
+            firstCard.classList.remove('flipped');
+            firstCard.textContent = '';
+        }
+        if (secondCard) {
+            secondCard.classList.remove('flipped');
+            secondCard.textContent = '';
+        }
         resetBoard();
+        unflipTimeout = null;
     }, 1000);
 }
 
 function resetBoard() {
     [firstCard, secondCard, lockBoard] = [null, null, false];
+}
+
+function endGame() {
+    stopTimer();
+    lockBoard = true;
+    if (resultElement) {
+        resultElement.textContent = `Peli ohi! Löysit kaikki parit. Yritykset: ${attempts}, Aika: ${secondsElapsed} sekuntia.`;
+        resultElement.style.display = 'block';
+    }
 }
