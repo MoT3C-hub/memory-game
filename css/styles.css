@@ -3,7 +3,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100vh;
     margin: 0;
     padding: 20px;
@@ -13,32 +13,45 @@ body {
 #controls {
     margin-bottom: 15px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
     align-items: center;
 }
 
 #game-info {
     margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+#result {
+    display: none;
+    color: #d9534f;
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    text-align: center;
 }
 
 #game-board {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
     gap: 10px;
-    max-width: 460px;
+    width: 100%;
+    max-width: 440px;
 }
 
 .card {
-    width: 100px;
-    height: 100px;
+    aspect-ratio: 1 / 1;
+    width: 100%;
     background-color: #ccc;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 36px;
+    font-size: clamp(24px, 6vw, 36px);
     cursor: pointer;
     border-radius: 8px;
+    user-select: none;
 }
 
 .card.flipped, .card.matched {
