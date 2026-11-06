@@ -5,9 +5,7 @@ export function createCardElement(card) {
     return cardElement;
 }
 
-export function flipCard(cardElement, callback) {
-    if (cardElement.classList.contains('flipped')) return;
+export function flipCard(cardElement) {
     cardElement.classList.add('flipped');
     cardElement.textContent = cardElement.dataset.card;
-    callback(cardElement);
 }
